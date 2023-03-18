@@ -165,8 +165,6 @@ void Game::Update(float deltaTime)
 		}
 	}
 
-	UpdateCamera(&TheCamera);
-
 	ThePlayer->Update(deltaTime);
 	TheRockControl->Update(deltaTime);
 	TheUFOControl->Update(deltaTime);

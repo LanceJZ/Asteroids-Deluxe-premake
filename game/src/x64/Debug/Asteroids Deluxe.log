@@ -1,2 +1,29 @@
-﻿  UFOControl.cpp
+﻿  Common.cpp
+  CrossCom.cpp
+  Dot.cpp
+  Entity.cpp
+  Exploder.cpp
+  Game.cpp
+  AsteroidsDeluxe.cpp
+  HighScore.cpp
+  Line.cpp
+  LineModel.cpp
+  LineModelManager.cpp
+  QuadModel.cpp
+  Player.cpp
+  PositionedObject.cpp
+  Rock.cpp
+  RockControl.cpp
+  RockData.cpp
+  Shot.cpp
+  Timer.cpp
+  UFO.cpp
+  Generating Code...
+  Compiling...
+  UFOControl.cpp
+  Wedge.cpp
+  WedgeControl.cpp
+  WedgeGroup.cpp
+  WedgePair.cpp
+  Generating Code...
   Asteroids Deluxe.vcxproj -> E:\Documents\Visual Studio 2022\Projects\C++\raylib\Asteroids Deluxe-premake\x64\Debug\Asteroids Deluxe.exe
