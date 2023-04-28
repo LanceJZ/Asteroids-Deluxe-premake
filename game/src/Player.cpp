@@ -3,18 +3,8 @@
 #include "raymath.h"
 #include <string>
 
-Player::Player(float windowWidth, float windowHeight, Color color)
+Player::Player()
 {
-	WindowWidth = windowWidth;
-	WindowHeight = windowHeight;
-	Player::ModelColor = color;
-	Flame = new LineModel();
-	Shield = new LineModel();
-
-	for (int i = 0; i < 4; i++)
-	{
-		Shots[i] = new Shot(windowWidth, windowHeight);
-	}
 }
 
 Player::~Player()
@@ -26,17 +16,24 @@ Player::~Player()
 	UnloadSound(Sound05);
 	UnloadSound(Sound06);
 	UnloadSound(Sound07);
+
+	for (int i = 0; i < Lines.size(); i++)
+	{
+		delete Lines[i];
+	}
+
+	Lines.clear();
 }
 
 void Player::LoadModel(string shipmodel, string flamemodel, string shieldmodel, vector<Vector3> dotModel)
 {
 	LineModel::LoadModel(shipmodel);
-	Flame->LoadModel(flamemodel);
-	Shield->LoadModel(shieldmodel);
+	Flame.LoadModel(flamemodel);
+	Shield.LoadModel(shieldmodel);
 
 	for (int i = 0; i < 4; i++)
 	{
-		Shots[i]->SetModel(dotModel);
+		Shots[i].SetModel(dotModel);
 	}
 }
 
@@ -60,66 +57,46 @@ void Player::LoadSound(Sound fireS, Sound thrustS, Sound exp, Sound bonus, Sound
 	SetSoundVolume(Sound07, 0.75f);
 }
 
-void Player::Initialize()
+void Player::Initialize(float windowWidth, float windowHeight, Color TheColor)
 {
+	WindowWidth = windowWidth;
+	WindowHeight = windowHeight;
+	Player::ModelColor = TheColor;
 	ModelColor = ModelColor;
-	Flame->ModelColor = ModelColor;
-	Shield->ModelColor = ModelColor;
+	Flame.ModelColor = ModelColor;
+	Shield.ModelColor = ModelColor;
 
 	MaxSpeed = 20;
 	Radius = 0.6f;
 	Enabled = false;
-	Shield->Enabled = false;
+	Shield.Enabled = false;
 
-	Flame->Scale = Scale;
-	Flame->Enabled = false;
-	Flame->HasCollision = false;
-	AddChild(Flame);
-	AddChild(Shield);
+	Flame.Scale = Scale;
+	Flame.Enabled = false;
+	Flame.HasCollision = false;
+	AddChild(&Flame);
+	AddChild(&Shield);
 
 	for (int i = 0; i < 6; i++)
 	{
 		Lines.push_back(new Line(ModelColor));
 	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		Shots[i].Initialize(windowWidth, windowHeight);
+	}
 }
 
 void Player::Input()
 {
-	float velocityRotZ = 0.07666f;
-
-	if (IsKeyDown(KEY_RIGHT))
+	if (IsGamepadAvailable(0))
 	{
-		Rotation += velocityRotZ;
-	}
-
-	if (IsKeyDown(KEY_LEFT))
-	{
-		Rotation -= velocityRotZ;
-	}
-
-	if (IsKeyDown(KEY_UP))
-	{
-		ThrustIsOn = true;
-		ThrustIsOff = false;
+		Gamepad();
 	}
 	else
 	{
-		ThrustIsOn = false;
-		ThrustIsOff = true;
-	}
-
-	if (IsKeyPressed(KEY_RIGHT_CONTROL) || IsKeyPressed(KEY_LEFT_CONTROL) || IsKeyPressed(KEY_SPACE))
-	{
-		Fire();
-	}
-
-	if (IsKeyDown(KEY_DOWN))
-	{
-		ShieldOn();
-	}
-	else
-	{
-		ShieldOff();
+		Keyboard();
 	}
 }
 
@@ -128,12 +105,12 @@ void Player::Update(float deltaTime)
 	PositionedObject::Update(deltaTime);
 	Entity::CheckScreenEdge();
 
-	Flame->Update(deltaTime);
-	Shield->Update(deltaTime);
+	Flame.Update(deltaTime);
+	Shield.Update(deltaTime);
 
-	for (auto shot : Shots)
+	for (auto &shot : Shots)
 	{
-		shot->Update(deltaTime);
+		shot.Update(deltaTime);
 	}
 
 	if (ThrustIsOff)
@@ -145,7 +122,7 @@ void Player::Update(float deltaTime)
 		ThrustOn(deltaTime);
 	}
 
-	if (Shield->Enabled)
+	if (Shield.Enabled)
 	{
 		if (ShieldPower > 0)
 		{
@@ -167,17 +144,17 @@ void Player::Update(float deltaTime)
 void Player::Draw()
 {
 	LineModel::Draw();
-	Flame->Draw();
-	Shield->Draw();
+	Flame.Draw();
+	Shield.Draw();
 
 	for (auto line : Lines)
 	{
 		line->Draw();
 	}
 
-	for (auto shot : Shots)
+	for (auto &shot : Shots)
 	{
-		shot->Draw();
+		shot.Draw();
 	}
 }
 
@@ -189,8 +166,8 @@ void Player::Hit()
 	ThrustIsOff = true;
 	ThrustIsOn = false;
 	Exploding = true;
-	Flame->Enabled = false;
-	Shield->Enabled = false;
+	Flame.Enabled = false;
+	Shield.Enabled = false;
 	Acceleration = { 0 };
 	Velocity = { 0 };
 
@@ -262,7 +239,7 @@ void Player::ThrustOn(float deltaTime)
 	Acceleration.x = ((cos(Rotation) - (Velocity.x * topaccel)) * acceleration) * deltaTime;
 	Acceleration.y = ((sin(Rotation) - (Velocity.y * topaccel)) * acceleration) * deltaTime;
 	ThrustIsOff = false;
-	Flame->Enabled = true;
+	Flame.Enabled = true;
 }
 
 void Player::ThrustOff(float deltaTime)
@@ -272,19 +249,19 @@ void Player::ThrustOff(float deltaTime)
 	float deceleration = 0.5f;
 	Acceleration.x = (-Velocity.x * deceleration) * deltaTime;
 	Acceleration.y = (-Velocity.y * deceleration) * deltaTime;
-	Flame->Enabled = false;
+	Flame.Enabled = false;
 }
 
 void Player::Fire()
 {
 	float speed = 25.5f;
 
-	for (auto shot : Shots)
+	for (auto &shot : Shots)
 	{
-		if (!shot->Enabled)
+		if (!shot.Enabled)
 		{
 			PlaySound(Sound01);
-			shot->Spawn(Position, VelocityFromAngleZ(speed), 1.5f);
+			shot.Spawn(Position, VelocityFromAngleZ(speed), 1.5f);
 			break;
 		}
 	}
@@ -297,7 +274,7 @@ bool Player::ShieldHit(Vector3 hitbyPos, Vector3 hitbyVel)
 		StopSound(Sound05);
 	}
 
-	if (ShieldPower == 0 || !Shield->Enabled)
+	if (ShieldPower == 0 || !Shield.Enabled)
 	{
 		Hit();
 		return false;
@@ -335,8 +312,8 @@ void Player::ShieldOn()
 			PlaySound(Sound06);
 		}
 
-		Shield->Enabled = true;
-		Shield->Alpha = 2.55f * ShieldPower;
+		Shield.Enabled = true;
+		Shield.Alpha = 2.55f * ShieldPower;
 	}
 }
 
@@ -344,10 +321,95 @@ void Player::ShieldOff()
 {
 	StopSound(Sound06);
 
-	Shield->Enabled = false;
+	Shield.Enabled = false;
+}
+
+void Player::Gamepad()
+{
+	//Button B is 6 for Shield //Button A is 7 for Fire //Button Y is 8 for Hyperspace
+	//Button X is 5	//Left bumper is 9 //Right bumper is 11 for Shield //Left Trigger is 10
+	//Right Trigger is 12 for Thrust //Dpad Up is 1 for	//Dpad Down is 3 for
+	//Dpad Left is 4 for rotate left //Dpad Right is 2 for rotate right
+	//Axis 1 is -1 for , 1 for  on left stick.
+	//Axis 0 is -1 for Left, 1 for right on left stick.
+
+	if (IsGamepadButtonDown(0, 12))
+	{
+		ThrustIsOn = true;
+		ThrustIsOff = false;
+	}
+	else
+	{
+		ThrustIsOn = false;
+		ThrustIsOff = true;
+	}
+
+	float velocityRotZ = 0.07666f;
+
+	if (IsGamepadButtonDown(0, 4) || GetGamepadAxisMovement(0, 0) < -0.25f)
+	{
+		Rotation -= velocityRotZ;
+	}
+	else if (IsGamepadButtonDown(0, 2) || GetGamepadAxisMovement(0, 0) > 0.25f)
+	{
+		Rotation += velocityRotZ;
+	}
+
+	if (IsGamepadButtonPressed(0, 7))
+	{
+		Fire();
+	}
+
+	if (IsGamepadButtonDown(0, 11) || IsGamepadButtonDown(0, 6))
+	{
+		ShieldOn();
+	}
+	else
+	{
+		ShieldOff();
+	}
+}
+
+void Player::Keyboard()
+{
+	float velocityRotZ = 0.07666f;
+
+	if (IsKeyDown(KEY_RIGHT))
+	{
+		Rotation += velocityRotZ;
+	}
+	else if (IsKeyDown(KEY_LEFT))
+	{
+		Rotation -= velocityRotZ;
+	}
+
+	if (IsKeyDown(KEY_UP))
+	{
+		ThrustIsOn = true;
+		ThrustIsOff = false;
+	}
+	else
+	{
+		ThrustIsOn = false;
+		ThrustIsOff = true;
+	}
+
+	if (IsKeyPressed(KEY_RIGHT_CONTROL) || IsKeyPressed(KEY_LEFT_CONTROL) || IsKeyPressed(KEY_SPACE))
+	{
+		Fire();
+	}
+
+	if (IsKeyDown(KEY_DOWN))
+	{
+		ShieldOn();
+	}
+	else
+	{
+		ShieldOff();
+	}
 }
 
 bool Player::GetShieldIsOn()
 {
-	return Shield->Enabled;
+	return Shield.Enabled;
 }

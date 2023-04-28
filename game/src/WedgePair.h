@@ -11,12 +11,13 @@ public:
 	bool WedgeDocked = true;
 	bool NewWave = false;
 
-	Wedge* Wedges[2];
+	Wedge Wedges[2];
 
-	WedgePair(float windowWidth, float windowHeight, Player* player, UFO* ufo, CrossCom* crossCom, Color color);
+	WedgePair();
 	virtual ~WedgePair();
 
-	bool Initialize();
+	bool Initialize(float windowWidth, float windowHeight, Player* player,
+		UFO* ufo, CrossCom* crossCom, Color TheColor);
 	void LoadSound(Sound explode);
 	void LoadModel(string model);
 	void LoadWedgeModel(vector<Vector3> model);
@@ -35,9 +36,9 @@ private:
 	Color TheColor = WHITE;
 
 	LineModel WedgeModel;
-	Player* ThePlayer;
-	UFO* TheUFO;
-	CrossCom* Comm;
+	Player* ThePlayer = nullptr;
+	UFO* TheUFO = nullptr;
+	CrossCom* Comm = nullptr;
 
 	bool CheckCollision();
 	void Collision();
@@ -45,5 +46,6 @@ private:
 	void ChaseUFO();
 	void TurnOff();
 	void LeavePlay();
+	void Reset();
 };
 

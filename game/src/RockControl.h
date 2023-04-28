@@ -9,12 +9,15 @@ using namespace std;
 class RockControl : public Common
 {
 public:
+	RockControl();
+	~RockControl();
+
 	bool RockCountUnderFour = false;
 	bool Debug = false;
 	vector<Rock*> Rocks;
 
-	RockControl(float screenWidth, float screenHeight, Player* player, UFO* ufo, CrossCom* crosscom, Color color);
-	bool Initialize();
+	bool Initialize(float screenWidth, float screenHeight, Player* player, UFO* ufo,
+		CrossCom* crosscom, Color TheColor);
 	virtual void LoadModel(string modelOne, string modelTwo, string modelThree,
 		string modelFour, vector<Vector3> dotModel);
 	void LoadSound(Sound exp);
@@ -31,11 +34,11 @@ private:
 	Color TheColor = WHITE;
 	LineModel RockModels[4];
 	vector<Vector3> DotModel;
-	Sound Explode;
+	Sound ExplodeSound = { 0 };
 
 	void SpawnRocks(Vector3 pos, int count, Rock::RockSize size);
-	Player* ThePlayer;
-	UFO* TheUFO;
-	CrossCom* Comm;
+	Player* ThePlayer = nullptr;
+	UFO* TheUFO = nullptr;
+	CrossCom* Comm = nullptr;
 };
 

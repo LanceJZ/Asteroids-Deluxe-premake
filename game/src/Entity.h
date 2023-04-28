@@ -10,15 +10,15 @@ public:
 	bool Debug = false;
 	float Scale = 1;
 
-	Sound Sound01;
-	Sound Sound02;
-	Sound Sound03;
-	Sound Sound04;
+	Sound Sound01 = { 0 };
+	Sound Sound02 = { 0 };
+	Sound Sound03 = { 0 };
+	Sound Sound04 = { 0 };
 
 	virtual void Update(float deltaTime);
 	virtual void Draw();
 
-	bool CirclesIntersect(Entity* target);
+	virtual bool CirclesIntersect(Entity* target);
 
 private:
 };

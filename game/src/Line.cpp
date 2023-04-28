@@ -1,11 +1,11 @@
 #include "Line.h"
 #include "raymath.h"
 
-Line::Line(Color color)
+Line::Line(Color TheColor)
 {
 	TheTimer = new Timer();
 	Enabled = false;
-	Line::TheColor = color;
+	Line::TheColor = TheColor;
 }
 
 Line::~Line()

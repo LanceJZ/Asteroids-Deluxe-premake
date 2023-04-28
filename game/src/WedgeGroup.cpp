@@ -1,21 +1,8 @@
 #include "WedgeGroup.h"
 #include "raymath.h"
 
-WedgeGroup::WedgeGroup(float windowWidth, float windowHeight, Player* player, UFO* ufo, CrossCom* crossCom, Color color)
+WedgeGroup::WedgeGroup()
 {
-	for (int i = 0; i < 3; i++)
-	{
-		WedgePairs[i] = new WedgePair(windowWidth, windowHeight, player, ufo, crossCom, color);
-	}
-
-	WindowHeight = windowHeight;
-	WindowWidth = windowWidth;
-	WedgeGroup::ThePlayer = player;
-	WedgeGroup::TheUFO = ufo;
-	WedgeGroup::Comm = crossCom;
-	WedgeGroup::TheColor = color;
-
-	Radius = 1.6f;
 }
 
 WedgeGroup::~WedgeGroup()
@@ -23,30 +10,24 @@ WedgeGroup::~WedgeGroup()
 	UnloadSound(Sound01);
 }
 
-bool WedgeGroup::Initialize()
+bool WedgeGroup::Initialize(float windowWidth, float windowHeight, Player* player,
+	UFO* ufo, CrossCom* crossCom, Color TheColor)
 {
-	//float wY = 0.75f;
-	//float wYlower = 0.35f;
-	//float wX = 0.65f;
-	//float rot = 0.333f;
-
-	//WedgePairs[0]->Rotation = 0;
-	//WedgePairs[0]->Position.y = wY;
-	//WedgePairs[0]->Position.x = 0;
-	//WedgePairs[1]->Position = { wX, -wYlower, 0 };
-	//WedgePairs[1]->Rotation = (float)PI * rot;
-	//WedgePairs[2]->Position = { -wX, -wYlower, 0 };
-	//WedgePairs[2]->Rotation = ((float)PI * 2) * rot;
-
-	for (auto wedgePair : WedgePairs)
+	for (int i = 0; i < 3; i++)
 	{
-		wedgePair->Initialize();
-		//AddChild(wedgePair);
+		WedgePairs[i].Initialize(windowWidth, windowHeight, player, ufo, crossCom, TheColor);
 	}
 
-	Enabled = false;
-	Comm->NewWave = false;
+	WindowHeight = windowHeight;
+	WindowWidth = windowWidth;
+	WedgeGroup::ThePlayer = player;
+	WedgeGroup::TheUFO = ufo;
+	WedgeGroup::Comm = crossCom;
+	WedgeGroup::TheColor = TheColor;
 	Position = { 50, 50, 0 };
+
+	Radius = 1.6f;
+	Enabled = false;
 
 	return false;
 }
@@ -56,9 +37,9 @@ void WedgeGroup::LoadSound(Sound explode)
 	Sound01 = explode;
 	SetSoundVolume(Sound01, 0.75f);
 
-	for (auto wedgePair : WedgePairs)
+	for (auto &wedgePair : WedgePairs)
 	{
-		wedgePair->LoadSound(explode);
+		wedgePair.LoadSound(explode);
 	}
 }
 
@@ -66,9 +47,9 @@ void WedgeGroup::LoadModel(string model)
 {
 	WedgeModel.LoadModel(model);
 
-	for (auto wedgePair : WedgePairs)
+	for (auto &wedgePair : WedgePairs)
 	{
-		wedgePair->LoadWedgeModel(WedgeModel.GetModel());
+		wedgePair.LoadWedgeModel(WedgeModel.GetModel());
 	}
 }
 
@@ -78,7 +59,7 @@ void WedgeGroup::Update(float deltaTime)
 
 	if (WedgepairsDocked)
 	{
-		if (CheckCollision())
+		if (CheckCollision() && Enabled)
 			Collision();
 
 		float wY = 0.75f;
@@ -88,30 +69,29 @@ void WedgeGroup::Update(float deltaTime)
 
 		Comm->WedgeGroupPos = Position;
 
-		WedgePairs[0]->Position.y = Position.y + wY;
-		WedgePairs[0]->Position.x = Position.x;
-		WedgePairs[1]->Position = { Position.x + wX, Position.y - wYlower, 0 };
-		WedgePairs[1]->Rotation = (float)PI * rot;
-		WedgePairs[2]->Position = { Position.x - wX, Position.y - wYlower, 0 };
-		WedgePairs[2]->Rotation = ((float)PI * 2) * rot;
+		WedgePairs[0].Position.y = Position.y + wY;
+		WedgePairs[0].Position.x = Position.x;
+		WedgePairs[1].Position = { Position.x + wX, Position.y - wYlower, 0 };
+		WedgePairs[1].Rotation = (float)PI * rot;
+		WedgePairs[2].Position = { Position.x - wX, Position.y - wYlower, 0 };
+		WedgePairs[2].Rotation = ((float)PI * 2) * rot;
 
 		if (!Comm->NewWave)
 		{
-			if (Enabled)
-				CheckScreenEdge();
+			if (Enabled) CheckScreenEdge();
 		}
 		else
 		{
 			if (OffScreen())
 			{
-				Initialize();
+				Enabled = false;
 			}
 		}
 	}
 
-	for (auto wedgePair : WedgePairs)
+	for (auto &wedgePair : WedgePairs)
 	{
-		wedgePair->Update(deltaTime);
+		wedgePair.Update(deltaTime);
 	}
 }
 
@@ -119,29 +99,39 @@ void WedgeGroup::Draw()
 {
 	Entity::Draw();
 
-	for (auto wedgePair : WedgePairs)
+	for (auto &wedgePair : WedgePairs)
 	{
-		wedgePair->Draw();
+		wedgePair.Draw();
 	}
 }
 
-void WedgeGroup::Spawn(Vector3 position, Vector3 velocity)
+void WedgeGroup::Spawn(Vector3 velocity)
 {
-	Initialize();
+	Position.y = GetRandomFloat(-WindowHeight, WindowHeight);
 
+	if (velocity.x < 0)
+	{
+		Position.x = WindowWidth;
+	}
+	else
+	{
+		Position.x = -(WindowWidth);
+	}
+
+	Comm->NewWave = false;
 	Comm->WedgeGroupActive = true;
 	Enabled = true;
 	WedgepairsDocked = true;
-	Position = position;
 	Velocity = velocity;
-	float rot = 0.333333f;
-	WedgePairs[0]->Rotation = 0;
-	WedgePairs[1]->Rotation = (float)PI * rot;
-	WedgePairs[2]->Rotation = ((float)PI * 2) * rot;
 
-	for (auto wedgePair : WedgePairs)
+	float rot = 0.333333f;
+	WedgePairs[0].Rotation = 0;
+	WedgePairs[1].Rotation = (float)PI * rot;
+	WedgePairs[2].Rotation = ((float)PI * 2) * rot;
+
+	for (auto &wedgePair : WedgePairs)
 	{
-		wedgePair->Spawn();
+		wedgePair.Spawn();
 	}
 }
 
@@ -156,12 +146,12 @@ bool WedgeGroup::CheckCollision()
 		}
 	}
 
-	for (auto shot : ThePlayer->Shots)
+	for (auto &shot : ThePlayer->Shots)
 	{
-		if (CirclesIntersect(shot))
+		if (CirclesIntersect(&shot))
 		{
 			ThePlayer->ScoreUpdate(Score);
-			shot->Enabled = false;
+			shot.Enabled = false;
 			return true;
 		}
 	}
@@ -172,9 +162,9 @@ bool WedgeGroup::CheckCollision()
 		return true;
 	}
 
-	if (CirclesIntersect(TheUFO->TheShot))
+	if (CirclesIntersect(&TheUFO->TheShot))
 	{
-		TheUFO->TheShot->Enabled = false;
+		TheUFO->TheShot.Enabled = false;
 		return true;
 	}
 
@@ -192,12 +182,15 @@ void WedgeGroup::Collision()
 void WedgeGroup::Undock()
 {
 	WedgepairsDocked = false;
-	Velocity = { 0 };
 	Enabled = false;
 	Comm->WedgeGroupActive = false;
 
-	for (auto wedgePair : WedgePairs)
+	for (auto &wedgePair : WedgePairs)
 	{
-		wedgePair->GroupDocked = false;
+		wedgePair.GroupDocked = false;
 	}
+}
+
+void WedgeGroup::Reset()
+{
 }

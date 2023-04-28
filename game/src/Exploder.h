@@ -6,10 +6,12 @@
 class Exploder
 {
 public:
-	Exploder(vector<Vector3> dotModel, Color color);
+	Exploder();
+	~Exploder();
+
+	bool Initialize(vector<Vector3> dotModel, Color TheColor);
 	virtual void Update(float deltaTime);
 	virtual void Draw();
-	bool Initialise();
 
 	void Spawn(Vector3 position, int count, float radius);
 	void Clear();

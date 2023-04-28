@@ -26,7 +26,7 @@ public:
 	Game();
 	~Game();
 
-	bool Initialise();
+	bool Initialize();
 	bool Load();
 	bool BeginRun();
 	void ProcessInput();
@@ -48,15 +48,15 @@ private:
 	Sound BackgroundLowSound;
 	Model PlayerShipModel;
 	Entity playerClear;
-	Player* ThePlayer;
-	RockControl* TheRockControl;
-	UFOControl* TheUFOControl;
-	WedgeControl* TheWedgeControl;
-	CrossCom* Comm;
-	HighScore* TheHighscores;
+	Player ThePlayer;
+	RockControl TheRockControl;
+	UFOControl TheUFOControl;
+	WedgeControl TheWedgeControl;
+	CrossCom Comm;
+	HighScore TheHighscores;
 	vector<LineModel*> PlayerShips;
 
-	Timer* BackgroundTimer;
+	Timer BackgroundTimer;
 
 	void PlayerShipDisplay();
 	void CheckPlayerClear();

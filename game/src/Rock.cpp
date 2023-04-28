@@ -1,19 +1,17 @@
 #include "Rock.h"
-#include "raymath.h"
 
-Rock::Rock(float windowWidth, float windowHeight, Player* player, UFO* ufo, Color color)
+Rock::Rock(float windowWidth, float windowHeight, Player* player, UFO* ufo, Color TheColor)
 {
 	WindowWidth = windowWidth;
 	WindowHeight = windowHeight;
-	Rock::ModelColor = color;
+	Rock::ModelColor = TheColor;
 	Rock::ThePlayer = player;
 	Rock::TheUFO = ufo;
-	LineModel::ModelColor = color;
+	LineModel::ModelColor = TheColor;
 }
 
 Rock::~Rock()
 {
-	UnloadSound(Sound01);
 }
 
 void Rock::SetDotModel(vector<Vector3> dotModel)
@@ -27,9 +25,9 @@ void Rock::LoadSound(Sound exp)
 	SetSoundVolume(Sound01, 0.5f);
 }
 
-bool Rock::Initialise()
+bool Rock::Initialize()
 {
-	TheExploder = new Exploder(DotModel, ModelColor);
+	TheExploder.Initialize(DotModel, ModelColor);
 
 	return false;
 }
@@ -37,7 +35,7 @@ bool Rock::Initialise()
 void Rock::Update(float deltaTime)
 {
 	LineModel::Update(deltaTime);
-	TheExploder->Update(deltaTime);
+	TheExploder.Update(deltaTime);
 	CheckScreenEdge();
 
 	if (CheckCollision())
@@ -50,14 +48,14 @@ void Rock::Update(float deltaTime)
 			PlaySound(Sound01);
 		}
 
-		TheExploder->Spawn(Position, 15, Radius);
+		TheExploder.Spawn(Position, 15, Radius);
 	}
 }
 
 void Rock::Draw()
 {
 	LineModel::Draw();
-	TheExploder->Draw();
+	TheExploder.Draw();
 }
 
 void Rock::Spawn(Vector3 pos, float speed, RockSize size)
@@ -125,11 +123,11 @@ void Rock::GiveScore()
 
 bool Rock::CheckCollision()
 {
-	for (auto shot : ThePlayer->Shots)
+	for (auto &shot : ThePlayer->Shots)
 	{
-		if (CirclesIntersect(shot))
+		if (CirclesIntersect(&shot))
 		{
-			shot->Enabled = false;
+			shot.Enabled = false;
 			GiveScore();
 
 			return true;
@@ -152,9 +150,9 @@ bool Rock::CheckCollision()
 		return true;
 	}
 
-	if (CirclesIntersect(TheUFO->TheShot))
+	if (CirclesIntersect(&TheUFO->TheShot))
 	{
-		TheUFO->TheShot->Enabled = false;
+		TheUFO->TheShot.Enabled = false;
 
 		return true;
 	}

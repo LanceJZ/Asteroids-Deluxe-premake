@@ -3,32 +3,34 @@
 
 Game::Game()
 {
-
 }
 
 Game::~Game()
 {
-
+	UnloadSound(BackgroundHighSound);
+	UnloadSound(BackgroundLowSound);
 }
 
-bool Game::Initialise()
+bool Game::Initialize()
 {
+	SetWindowTitle("Asteroids Deluxe 1.35");
 	float per = 42.75f;
 	float playScreenW = GetScreenWidth() / per; //Play area width.
 	float playScreenH = GetScreenHeight() / per; //Play area height.
 
 	playerClear.Radius = 10.0f;
 	playerClear.Enabled = false;
-	Comm = new CrossCom();
-	ThePlayer = new Player(playScreenW, playScreenH, TheColor);
-	TheUFOControl = new UFOControl(playScreenW, playScreenH, ThePlayer, Comm, TheColor);
-	TheRockControl = new RockControl(playScreenW, playScreenH, ThePlayer, TheUFOControl->TheUFO, Comm, TheColor);
-	TheWedgeControl = new WedgeControl(playScreenW, playScreenH, ThePlayer, TheUFOControl->TheUFO, Comm, TheColor);
 
-	TheHighscores = new HighScore(TheColor);
-	TheHighscores->Load();
-	ThePlayer->HighScore = TheHighscores->TheHighScore;
-	BackgroundTimer = new Timer();
+	TheHighscores.Load();
+	ThePlayer.HighScore = TheHighscores.TheHighScore;
+
+	ThePlayer.Initialize(playScreenW, playScreenH, TheColor);
+	TheUFOControl.Initialize(playScreenW, playScreenH, &ThePlayer, &Comm, TheColor);
+	TheRockControl.Initialize(playScreenW, playScreenH, &ThePlayer,
+		&TheUFOControl.TheUFO, &Comm, TheColor);
+	TheWedgeControl.Initialize(playScreenW, playScreenH, &ThePlayer,
+		&TheUFOControl.TheUFO, &Comm, TheColor);
+	TheHighscores.Initialize(TheColor);
 
 	return false;
 }
@@ -61,32 +63,28 @@ bool Game::Load()
 	SetSoundVolume(BackgroundHighSound, 0.15f);
 	SetSoundVolume(BackgroundLowSound, 0.15f);
 
-	ThePlayer->LoadModel("Models/PlayerShip.vec", "Models/PlayerFlame.vec",
+	ThePlayer.LoadModel("Models/PlayerShip.vec", "Models/PlayerFlame.vec",
 		"Models/PlayerShield.vec", dotModel.GetModel());
-	ThePlayer->LoadSound(fireS, thrustS, playerExpS, playerBonusS, playerShieldHit, playerShieldOn, playerSpawn);
-	TheRockControl->LoadModel(rockOne, rockTwo, rockThree, rockFour, dotModel.GetModel());
-	TheRockControl->LoadSound(rockExpS);
-	TheUFOControl->LoadModel("Models/UFO.vec", dotModel.GetModel());
-	TheWedgeControl->LoadModel("Models/Wedge.vec");
-	TheWedgeControl->LoadSound(wedgeExplode, wedgeGroupSpawn);
-	TheUFOControl->LoadSound(ufoExpS, ufoBigS, ufoSmallS, ufoFire);
+	ThePlayer.LoadSound(fireS, thrustS, playerExpS, playerBonusS, playerShieldHit, playerShieldOn, playerSpawn);
+	TheRockControl.LoadModel(rockOne, rockTwo, rockThree, rockFour, dotModel.GetModel());
+	TheRockControl.LoadSound(rockExpS);
+	TheUFOControl.LoadModel("Models/UFO.vec", dotModel.GetModel());
+	TheWedgeControl.LoadModel("Models/Wedge.vec");
+	TheWedgeControl.LoadSound(wedgeExplode, wedgeGroupSpawn);
+	TheUFOControl.LoadSound(ufoExpS, ufoBigS, ufoSmallS, ufoFire);
 
 	return 0;
 }
 
 bool Game::BeginRun()
 {
-	ThePlayer->Initialize();
-	TheUFOControl->Initialize();
-	TheRockControl->Initialize();
-	TheRockControl->NewGame();
-	TheWedgeControl->Initialise();
+	TheRockControl.NewGame();
 
 	for (int i = 0; i < 4; i++)
 	{
 		PlayerShips.push_back(new LineModel());
-		PlayerShips[PlayerShips.size() - 1]->SetModel(ThePlayer->GetModel());
-		PlayerShips[i]->Scale = ThePlayer->Scale;
+		PlayerShips[PlayerShips.size() - 1]->SetModel(ThePlayer.GetModel());
+		PlayerShips[i]->Scale = ThePlayer.Scale;
 		PlayerShips[i]->Enabled = false;
 		PlayerShips[i]->ModelColor = TheColor;
 	}
@@ -96,41 +94,70 @@ bool Game::BeginRun()
 
 void Game::ProcessInput()
 {
-	if (ThePlayer->Enabled)
+	if (ThePlayer.Enabled)
 	{
-		ThePlayer->Input();
+		ThePlayer.Input();
 	}
-	else if (IsKeyPressed(KEY_N))
+	else
 	{
-		ThePlayer->NewGame();
-		TheRockControl->NewGame();
-		TheUFOControl->NewGame();
-		PlayerShipDisplay();
-		TheHighscores->GameOver = false;
+		if (IsGamepadAvailable(0))
+		{
+			if (IsGamepadButtonPressed(0, 15))//Start button
+			{
+				ThePlayer.NewGame();
+				TheRockControl.NewGame();
+				TheUFOControl.NewGame();
+				PlayerShipDisplay();
+				TheHighscores.GameOver = false;
+			}
+		}
+
+		if (IsKeyPressed(KEY_N))
+		{
+			ThePlayer.NewGame();
+			TheRockControl.NewGame();
+			TheUFOControl.NewGame();
+			PlayerShipDisplay();
+			TheHighscores.GameOver = false;
+		}
 	}
 
-	if (IsKeyPressed(KEY_P) && !ThePlayer->GameOver)
+	if (IsGamepadAvailable(0) && !ThePlayer.GameOver)
 	{
-		ThePlayer->Paused = !ThePlayer->Paused;
+		if (IsGamepadButtonPressed(0, 13)) //Menu Button
+		{
+			ThePlayer.Paused = !ThePlayer.Paused;
+		}
+
+		if (IsGamepadButtonPressed(0, 8)) //X button
+		{
+			MuteBackground = !MuteBackground;
+		}
 	}
 
-	if (IsKeyPressed(KEY_D) && !ThePlayer->GameOver)
-	{
-		ThePlayer->Debug = true;
-		TheUFOControl->TheUFO->Debug = true;
-		TheRockControl->Debug = true;
 
-		for (auto rock : TheRockControl->Rocks)
+	if (IsKeyPressed(KEY_P) && !ThePlayer.GameOver)
+	{
+		ThePlayer.Paused = !ThePlayer.Paused;
+	}
+
+	if (IsKeyPressed(KEY_D) && !ThePlayer.GameOver)
+	{
+		ThePlayer.Debug = true;
+		TheUFOControl.TheUFO.Debug = true;
+		TheRockControl.Debug = true;
+
+		for (auto rock : TheRockControl.Rocks)
 		{
 			rock->Debug = true;
 		}
 
-		for (auto wedgepairs : TheWedgeControl->TheWedgeGroup->WedgePairs)
+		for (auto &wedgepairs : TheWedgeControl.TheWedgeGroup.WedgePairs)
 		{
-			wedgepairs->SetDebug();
+			wedgepairs.SetDebug();
 		}
 
-		TheWedgeControl->TheWedgeGroup->Debug = true;
+		TheWedgeControl.TheWedgeGroup.Debug = true;
 	}
 
 	if (IsKeyPressed(KEY_M))
@@ -142,56 +169,56 @@ void Game::ProcessInput()
 
 void Game::Update(float deltaTime)
 {
-	if (ThePlayer->Paused)
+	if (ThePlayer.Paused)
 	{
 		return;
 	}
 
-	if (!TheHighscores->GameOver)
+	if (!TheHighscores.GameOver)
 	{
-		BackgroundTimer->Update(deltaTime);
+		BackgroundTimer.Update(deltaTime);
 
 		if (!MuteBackground)
 		{
-			if (Comm->NewWave)
+			if (Comm.NewWave)
 			{
-				BackgroundTimer->Set(1);
+				BackgroundTimer.Set(1);
 				BackgroundHighPitch = 1;
 				BackgroundLowPitch = 1;
 			}
 
-			if (BackgroundTimer->Elapsed())
+			if (BackgroundTimer.Elapsed())
 				PlayBackgroundSound();
 		}
 	}
 
-	ThePlayer->Update(deltaTime);
-	TheRockControl->Update(deltaTime);
-	TheUFOControl->Update(deltaTime);
-	TheWedgeControl->Update(deltaTime);
+	ThePlayer.Update(deltaTime);
+	TheRockControl.Update(deltaTime);
+	TheUFOControl.Update(deltaTime);
+	TheWedgeControl.Update(deltaTime);
 
-	for (auto line : ThePlayer->Lines)
+	for (auto line : ThePlayer.Lines)
 	{
 		line->Update(deltaTime);
 	}
 
-	if (ThePlayer->Enabled)
+	if (ThePlayer.Enabled)
 	{
 		playerClear.Enabled = false;
 
-		if (ThePlayer->NewLife)
+		if (ThePlayer.NewLife)
 		{
-			ThePlayer->NewLife = false;
+			ThePlayer.NewLife = false;
 			PlayerShipDisplay();
 		}
 	}
 	else
 	{
-		if (ThePlayer->Exploding)
+		if (ThePlayer.Exploding)
 		{
 			bool done = true;
 
-			for (auto line : ThePlayer->Lines)
+			for (auto line : ThePlayer.Lines)
 			{
 				if (line->Enabled)
 				{
@@ -202,30 +229,30 @@ void Game::Update(float deltaTime)
 
 			if (done)
 			{
-				ThePlayer->Exploding = false;
+				ThePlayer.Exploding = false;
 			}
 		}
 
-		if (ThePlayer->Lives > 0)
+		if (ThePlayer.Lives > 0)
 		{
 			playerClear.Enabled = true;
-			TheRockControl->Update(deltaTime);
-			TheUFOControl->Update(deltaTime);
-			TheWedgeControl->Update(deltaTime);
+			TheRockControl.Update(deltaTime);
+			TheUFOControl.Update(deltaTime);
+			TheWedgeControl.Update(deltaTime);
 			CheckPlayerClear();
 			PlayerShipDisplay();
 		}
-		else if (!ThePlayer->GameOver)
+		else if (!ThePlayer.GameOver)
 		{
 			PlayerShipDisplay();
-			TheHighscores->TheHighScore = ThePlayer->HighScore;
-			TheHighscores->CheckForNewHighScore(ThePlayer->Score);
-			ThePlayer->GameOver = true;
-			TheHighscores->GameOver = true;
+			TheHighscores.TheHighScore = ThePlayer.HighScore;
+			TheHighscores.CheckForNewHighScore(ThePlayer.Score);
+			ThePlayer.GameOver = true;
+			TheHighscores.GameOver = true;
 		}
 		else
 		{
-			TheHighscores->Update(deltaTime);
+			TheHighscores.Update(deltaTime);
 		}
 	}
 }
@@ -236,10 +263,10 @@ void Game::Draw()
 	ClearBackground({ 8, 2, 16, 100 });
 	BeginMode3D(TheCamera);
 	//3D Drawing here.
-	ThePlayer->Draw();
-	TheRockControl->Draw();
-	TheUFOControl->Draw();
-	TheWedgeControl->Draw();
+	ThePlayer.Draw();
+	TheRockControl.Draw();
+	TheUFOControl.Draw();
+	TheWedgeControl.Draw();
 
 	for (auto ship : PlayerShips)
 	{
@@ -248,20 +275,20 @@ void Game::Draw()
 
 	EndMode3D();
 	//2D drawing, fonts go here.
-	TheHighscores->Draw();
+	TheHighscores.Draw();
 
-	if (ThePlayer->Paused)
+	if (ThePlayer.Paused)
 	{
 		DrawText("Paused", (GetScreenWidth() / 2) - 80, (GetScreenHeight() / 2) - 20, 50, TheColor);
 	}
 
-	if (ThePlayer->Debug)
+	if (ThePlayer.Debug)
 	{
 		DrawText("Debug Mode Active!", (int)(GetScreenWidth() / 1.1f), (int)(GetScreenHeight() / 40), 10, TheColor);
 	}
 
-	DrawText(const_cast<char*>(to_string(ThePlayer->Score).c_str()), 200, 5, 45, TheColor);
-	DrawText(const_cast<char*>(to_string(ThePlayer->HighScore).c_str()), GetScreenWidth() / 2, 4, 20, TheColor);
+	DrawText(const_cast<char*>(to_string(ThePlayer.Score).c_str()), 200, 5, 45, TheColor);
+	DrawText(const_cast<char*>(to_string(ThePlayer.HighScore).c_str()), GetScreenWidth() / 2, 4, 20, TheColor);
 	DrawText("(C) 1980 ATARI INC", (GetScreenWidth() / 2) - 15, GetScreenHeight() - 12, 8, TheColor);
 
 	EndDrawing();
@@ -269,13 +296,13 @@ void Game::Draw()
 
 void Game::PlayerShipDisplay()
 {
-	float line = ThePlayer->WindowHeight - ThePlayer->Radius - 2.5f;
+	float line = ThePlayer.WindowHeight - ThePlayer.Radius - 2.5f;
 	float column = 20.0f;
 
-	if (ThePlayer->Lives > PlayerShips.size())
+	if (ThePlayer.Lives > PlayerShips.size())
 	{
 		PlayerShips.push_back(new LineModel());
-		PlayerShips[PlayerShips.size() - 1]->SetModel(ThePlayer->GetModel());
+		PlayerShips[PlayerShips.size() - 1]->SetModel(ThePlayer.GetModel());
 		PlayerShips[PlayerShips.size() - 1]->ModelColor = TheColor;
 	}
 
@@ -288,7 +315,7 @@ void Game::PlayerShipDisplay()
 		column += 1.125f;
 	}
 
-	for (int i = 0; i < ThePlayer->Lives; i++)
+	for (int i = 0; i < ThePlayer.Lives; i++)
 	{
 		PlayerShips[i]->Enabled = true;
 	}
@@ -298,45 +325,45 @@ void Game::CheckPlayerClear()
 {
 	bool clear = true;
 
-	for (auto rock : TheRockControl->Rocks)
+	for (auto rock : TheRockControl.Rocks)
 	{
 		if (playerClear.CirclesIntersect(rock))
 		{
 			clear = false;
 		}
 
-		if (playerClear.CirclesIntersect(TheUFOControl->TheUFO))
+		if (playerClear.CirclesIntersect(&TheUFOControl.TheUFO))
 		{
 			clear = false;
 		}
 
-		if (playerClear.CirclesIntersect(TheUFOControl->TheUFO->TheShot))
+		if (playerClear.CirclesIntersect(&TheUFOControl.TheUFO.TheShot))
 		{
 			clear = false;
 		}
 
-		if (playerClear.CirclesIntersect(TheWedgeControl->TheWedgeGroup))
+		if (playerClear.CirclesIntersect(&TheWedgeControl.TheWedgeGroup))
 		{
 			clear = false;
 		}
 
-		for (auto wedgePair : TheWedgeControl->TheWedgeGroup->WedgePairs)
+		for (auto &wedgePair : TheWedgeControl.TheWedgeGroup.WedgePairs)
 		{
-			if (playerClear.CirclesIntersect(wedgePair))
+			if (playerClear.CirclesIntersect(&wedgePair))
 			{
 				clear = false;
 			}
 
-			for (auto wedge : wedgePair->Wedges)
+			for (auto &wedge : wedgePair.Wedges)
 			{
-				if (playerClear.CirclesIntersect(wedge))
+				if (playerClear.CirclesIntersect(&wedge))
 				{
 					clear = false;
 				}
 			}
 		}
 
-		if (TheUFOControl->TheUFO->Enabled)
+		if (TheUFOControl.TheUFO.Enabled)
 		{
 			clear = false;
 		}
@@ -344,7 +371,7 @@ void Game::CheckPlayerClear()
 
 	if (clear)
 	{
-		ThePlayer->Reset();
+		ThePlayer.Reset();
 	}
 }
 
@@ -385,12 +412,12 @@ void Game::PlayBackgroundSound()
 		}
 	}
 
-	if (BackgroundTimer->Amount > 0.5f)
+	if (BackgroundTimer.Amount > 0.5f)
 	{
-		BackgroundTimer->Amount *= 0.995f;
+		BackgroundTimer.Amount *= 0.995f;
 	}
 
-	BackgroundTimer->Reset();
+	BackgroundTimer.Reset();
 }
 
 

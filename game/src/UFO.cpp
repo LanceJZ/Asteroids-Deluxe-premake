@@ -1,18 +1,8 @@
 #include "UFO.h"
 #include "raymath.h"
 
-UFO::UFO(float windowWidth, float windowHeight, Player* player, CrossCom* crossCom, Color color)
+UFO::UFO()
 {
-	UFO::ThePlayer = player;
-	UFO::Comm = crossCom;
-	UFO::ModelColor = color;
-	LineModel::ModelColor = color;
-	TheShot = new Shot(windowWidth, windowHeight);
-	TheShot->ModelColor = color;
-	WindowWidth = windowWidth;
-	WindowHeight = windowHeight;
-	FireTimer = new Timer();
-	VectorTimer = new Timer();
 }
 
 UFO::~UFO()
@@ -23,11 +13,26 @@ UFO::~UFO()
 	UnloadSound(Sound04);
 }
 
+bool UFO::Initialize(float windowWidth, float windowHeight, Player* player, CrossCom* crossCom, Color TheColor)
+{
+	Enabled = false;
+	UFO::ThePlayer = player;
+	UFO::Comm = crossCom;
+	UFO::ModelColor = TheColor;
+	LineModel::ModelColor = TheColor;
+	TheShot.ModelColor = TheColor;
+	WindowWidth = windowWidth;
+	WindowHeight = windowHeight;
+	TheShot.Initialize(windowWidth, windowHeight);
+
+	return false;
+}
+
 void UFO::LoadModel(string ship, vector<Vector3> dotModel)
 {
 	LineModel::LoadModel(ship);
-	TheShot->SetModel(dotModel);
-	TheExploder = new Exploder(dotModel, ModelColor);
+	TheShot.SetModel(dotModel);
+	TheExploder.Initialize(dotModel, ModelColor);
 }
 
 void UFO::LoadSound(Sound exp, Sound big, Sound small, Sound fire)
@@ -43,23 +48,16 @@ void UFO::LoadSound(Sound exp, Sound big, Sound small, Sound fire)
 	SetSoundVolume(Sound04, 0.5f);
 }
 
-bool UFO::Initialise()
-{
-	Enabled = false;
-
-	return false;
-}
-
 void UFO::Update(float deltaTime)
 {
 	LineModel::Update(deltaTime);
-	TheExploder->Update(deltaTime);
-	TheShot->Update(deltaTime);
+	TheExploder.Update(deltaTime);
+	TheShot.Update(deltaTime);
 
 	if (Enabled)
 	{
-		FireTimer->Update(deltaTime);
-		VectorTimer->Update(deltaTime);
+		FireTimer.Update(deltaTime);
+		VectorTimer.Update(deltaTime);
 		CheckScreenEdgeY();
 
 		if (CheckReachedSide())
@@ -67,13 +65,13 @@ void UFO::Update(float deltaTime)
 			Enabled = false;
 		}
 
-		if (VectorTimer->Elapsed())
+		if (VectorTimer.Elapsed())
 		{
 			ChangeVector();
 			ResetVectorTimer();
 		}
 
-		if (FireTimer->Elapsed())
+		if (FireTimer.Elapsed())
 		{
 			FireShot();
 			ResetFireTimer();
@@ -110,8 +108,8 @@ void UFO::Update(float deltaTime)
 void UFO::Draw()
 {
 	LineModel::Draw();
-	TheExploder->Draw();
-	TheShot->Draw();
+	TheExploder.Draw();
+	TheShot.Draw();
 }
 
 void UFO::Spawn(Vector3 pos, Vector3 vel)
@@ -128,7 +126,7 @@ void UFO::Spawn(Vector3 pos, Vector3 vel)
 void UFO::Collision()
 {
 	Enabled = false;
-	TheExploder->Spawn(Position, 15, Radius / 2.0f);
+	TheExploder.Spawn(Position, 15, Radius / 2.0f);
 
 	if (!ThePlayer->GameOver)
 	{
@@ -140,12 +138,12 @@ void UFO::Collision()
 
 void UFO::ResetFireTimer()
 {
-	FireTimer->Reset(GetRandomFloat(0.75f, 2.75f));
+	FireTimer.Reset(GetRandomFloat(0.75f, 2.75f));
 }
 
 void UFO::ResetVectorTimer()
 {
-	VectorTimer->Reset(GetRandomFloat(1.25f, 3.15f));
+	VectorTimer.Reset(GetRandomFloat(1.25f, 3.15f));
 }
 
 void UFO::ChangeVector()
@@ -215,7 +213,7 @@ void UFO::FireShot()
 		angle = AimedShotAtRock();
 	}
 
-	if (!TheShot->Enabled)
+	if (!TheShot.Enabled)
 	{
 		if (!ThePlayer->GameOver)
 		{
@@ -223,7 +221,7 @@ void UFO::FireShot()
 		}
 
 		Vector3 offset = Vector3Add(VelocityFromAngleZ(Radius), Position);
-		TheShot->Spawn(offset,	VelocityFromAngleZ(angle, shotSpeed), 2.5f);
+		TheShot.Spawn(offset,	VelocityFromAngleZ(angle, shotSpeed), 2.5f);
 	}
 }
 
@@ -300,10 +298,10 @@ void UFO::GiveScore()
 
 bool UFO::CheckCollision()
 {
-	if (TheShot->CirclesIntersect(ThePlayer))
+	if (TheShot.CirclesIntersect(ThePlayer))
 	{
-		ThePlayer->ShieldHit(TheShot->Position, TheShot->Velocity);
-		TheShot->Enabled = false;
+		ThePlayer->ShieldHit(TheShot.Position, TheShot.Velocity);
+		TheShot.Enabled = false;
 	}
 
 	if (CirclesIntersect(ThePlayer))
@@ -315,11 +313,11 @@ bool UFO::CheckCollision()
 		}
 	}
 
-	for (auto shot : ThePlayer->Shots)
+	for (auto &shot : ThePlayer->Shots)
 	{
-		if (CirclesIntersect(shot))
+		if (CirclesIntersect(&shot))
 		{
-			shot->Enabled = false;
+			shot.Enabled = false;
 			GiveScore();
 			return true;
 		}

@@ -18,17 +18,17 @@ public:
 
 	Size size = Large;
 
-	Shot* TheShot;
-	Timer* FireTimer;
-	Timer* VectorTimer;
-	Exploder* TheExploder;
+	Shot TheShot;
+	Exploder TheExploder;
 	std::vector<RockData*> Rocks;
 
-	UFO(float windowWidth, float windowHeight, Player* player, CrossCom* crossCom, Color color);
+	UFO();
 	~UFO();
+
+	bool Initialize(float windowWidth, float windowHeight, Player* player,
+		CrossCom* crossCom, Color TheColor);
 	void LoadModel(string ship, vector<Vector3> dotModel);
 	void LoadSound(Sound exp, Sound big, Sound small, Sound fire);
-	bool Initialise();
 	virtual void Update(float deltaTime);
 	virtual void Draw();
 
@@ -37,8 +37,11 @@ public:
 
 
 private:
-	Player* ThePlayer;
-	CrossCom* Comm;
+	Timer FireTimer;
+	Timer VectorTimer;
+
+	Player* ThePlayer = nullptr;
+	CrossCom* Comm = nullptr;
 
 	void GiveScore();
 	void ResetFireTimer();

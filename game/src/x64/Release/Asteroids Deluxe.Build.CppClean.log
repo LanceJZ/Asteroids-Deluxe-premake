@@ -1,26 +1,40 @@
-e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\asteroidsdeluxe.obj
-e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\common.obj
-e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\crosscom.obj
-e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\dot.obj
-e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\entity.obj
-e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\exploder.obj
-e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\highscore.obj
-e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\line.obj
-e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\linemodel.obj
-e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\linemodelmanager.obj
-e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\player.obj
-e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\positionedobject.obj
-e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\quadmodel.obj
-e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\rock.obj
-e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\rockcontrol.obj
-e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\rockdata.obj
-e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\shot.obj
-e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\timer.obj
-e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\ufo.obj
-e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\ufocontrol.obj
-e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\wedge.obj
-e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\wedgecontrol.obj
-e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\wedgegroup.obj
-e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\wedgepair.obj
 e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\vc143.pdb
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\ufo.obj
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\timer.obj
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\shot.obj
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\rockdata.obj
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\rockcontrol.obj
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\rock.obj
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\positionedobject.obj
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\player.obj
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\quadmodel.obj
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\linemodelmanager.obj
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\linemodel.obj
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\line.obj
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\highscore.obj
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\asteroidsdeluxe.obj
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\game.obj
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\exploder.obj
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\entity.obj
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\dot.obj
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\crosscom.obj
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\common.obj
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\wedgepair.obj
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\wedgegroup.obj
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\wedgecontrol.obj
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\wedge.obj
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\ufocontrol.obj
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\x64\release\asteroids deluxe.exe
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\asteroids deluxe.ipdb
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\x64\release\asteroids deluxe.pdb
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\asteroids deluxe.iobj
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\asteroids deluxe.res
 e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\asteroids deluxe.tlog\cl.command.1.tlog
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\asteroids deluxe.tlog\cl.read.1.tlog
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\asteroids deluxe.tlog\cl.write.1.tlog
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\asteroids deluxe.tlog\link.command.1.tlog
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\asteroids deluxe.tlog\link.read.1.tlog
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\asteroids deluxe.tlog\link.write.1.tlog
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\asteroids deluxe.tlog\rc.command.1.tlog
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\asteroids deluxe.tlog\rc.read.1.tlog
+e:\documents\visual studio 2022\projects\c++\raylib\asteroids deluxe-premake\game\src\x64\release\asteroids deluxe.tlog\rc.write.1.tlog

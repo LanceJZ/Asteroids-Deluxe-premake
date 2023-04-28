@@ -1,14 +1,17 @@
 #include "HighScore.h"
 
-HighScore::HighScore(Color color)
+HighScore::HighScore()
 {
-	highScoretimer = new Timer();
-	highScoretimer->Set(7);
-	HighScore::color = color;
+	highScoretimer.Set(7);
 }
 
 HighScore::~HighScore()
 {
+}
+
+void HighScore::Initialize(Color TheColor)
+{
+	HighScore::TheColor = TheColor;
 }
 
 void HighScore::Input()
@@ -23,7 +26,7 @@ void HighScore::Update(float deltaTime)
 		NewHighScoreEntry();
 	}
 
-	highScoretimer->Update(deltaTime);
+	highScoretimer.Update(deltaTime);
 }
 
 void HighScore::Draw()
@@ -33,17 +36,17 @@ void HighScore::Draw()
 		if (newHighScore)
 		{
 			DrawText("Left/Right",
-				(GetScreenWidth() / 2) - 80, (GetScreenHeight() / 2) - 250, 40, color);
+				(GetScreenWidth() / 2) - 80, (GetScreenHeight() / 2) - 250, 40, TheColor);
 			DrawText("arrow keys",
-				(GetScreenWidth() / 2) - 90, (GetScreenHeight() / 2) - 200, 40, color);
+				(GetScreenWidth() / 2) - 90, (GetScreenHeight() / 2) - 200, 40, TheColor);
 			DrawText("to change letter,",
-				(GetScreenWidth() / 2) - 130, (GetScreenHeight() / 2) - 150, 40, color);
+				(GetScreenWidth() / 2) - 130, (GetScreenHeight() / 2) - 150, 40, TheColor);
 			DrawText("down arrow key",
-				(GetScreenWidth() / 2) - 120, (GetScreenHeight() / 2) - 100, 40, color);
+				(GetScreenWidth() / 2) - 120, (GetScreenHeight() / 2) - 100, 40, TheColor);
 			DrawText("to chose letter.",
-				(GetScreenWidth() / 2) - 120, (GetScreenHeight() / 2) - 50, 40, color);
+				(GetScreenWidth() / 2) - 120, (GetScreenHeight() / 2) - 50, 40, TheColor);
 			DrawText(const_cast<char*>(highScoreEntryText.c_str()), (GetScreenWidth() / 2) - 30,
-				(GetScreenHeight() / 2) + 130, 60, color);
+				(GetScreenHeight() / 2) + 130, 60, TheColor);
 		}
 		else
 		{
@@ -53,15 +56,15 @@ void HighScore::Draw()
 			}
 			else
 			{
-				DrawText("GAME OVER", GetScreenWidth() / 2 - 160, GetScreenHeight() / 2 - 60, 60, color);
-				DrawText("ONE COIN ONE PLAY", GetScreenWidth() / 2 - 290, GetScreenHeight() / 2 + 60, 60, color);
+				DrawText("GAME OVER", GetScreenWidth() / 2 - 160, GetScreenHeight() / 2 - 60, 60, TheColor);
+				DrawText("ONE COIN ONE PLAY", GetScreenWidth() / 2 - 290, GetScreenHeight() / 2 + 60, 60, TheColor);
 			}
 		}
 
-		if (highScoretimer->Elapsed())
+		if (highScoretimer.Elapsed())
 		{
 			showHighScores = !showHighScores;
-			highScoretimer->Reset();
+			highScoretimer.Reset();
 		}
 	}
 }
@@ -177,7 +180,7 @@ void HighScore::CheckForNewHighScore(int score)
 		}
 	}
 
-	while (IsKeyDown(KEY_DOWN || KEY_LEFT || KEY_RIGHT))
+	while (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_RIGHT))
 	{
 		int i = 0;
 	}
@@ -232,17 +235,17 @@ void HighScore::DisplayHighScoreList()
 	int center = GetScreenWidth() / 2;
 
 	DrawText("N to start new game.",
-		center - 180, (GetScreenHeight() / 2) + 250, 40, color);
+		center - 180, (GetScreenHeight() / 2) + 250, 40, TheColor);
 
 
-	DrawText("High Scores", (int)((center - space) * 2.25f), start - 50, font, color);
+	DrawText("High Scores", (int)((center - space) * 2.25f), start - 50, font, TheColor);
 
 	for (int i = 0; i < 10; i++)
 	{
 		name = Scores[i].Name;
 		score = to_string(Scores[i].Score);
 
-		DrawText(const_cast<char*>(name.c_str()), center - (space + 10), start + (space * i), font, color);
-		DrawText(const_cast<char*>(score.c_str()), center + (space + 10), start + (space * i), font, color);
+		DrawText(const_cast<char*>(name.c_str()), center - (space + 10), start + (space * i), font, TheColor);
+		DrawText(const_cast<char*>(score.c_str()), center + (space + 10), start + (space * i), font, TheColor);
 	}
 }

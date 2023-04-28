@@ -24,7 +24,7 @@ int main()
 	camera.projection = CAMERA_ORTHOGRAPHIC;   // Camera mode type
 	game.TheCamera = camera;
 
-	game.Initialise();
+	game.Initialize();
 	game.Load();
 	game.BeginRun();
 	//game.GameLoop();

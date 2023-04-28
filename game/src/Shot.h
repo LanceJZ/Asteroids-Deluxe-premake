@@ -6,11 +6,13 @@
 class Shot : public LineModel
 {
 public:
+	Shot();
+
+	bool Initialize(float windowWidth, float windowHeight);
 	virtual void Update(float deltaTime);
 	virtual void Draw();
 	void Spawn(Vector3 pos, Vector3 vel, float timerAmount);
-	Shot(float windowWidth, float windowHeight);
 
 private:
-	Timer* LifeTimer;
+	Timer LifeTimer;
 };

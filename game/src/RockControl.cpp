@@ -1,18 +1,31 @@
  #include "RockControl.h"
 #include <vector>
 
-RockControl::RockControl(float screenWidth, float screenHeight, Player* player, UFO* ufo, CrossCom* crosscom, Color color)
+RockControl::RockControl()
+{
+}
+
+RockControl::~RockControl()
+{
+	UnloadSound(ExplodeSound);
+
+	for (int i = 0; i < Rocks.size(); i++)
+	{
+		delete Rocks[i];
+	}
+
+	Rocks.clear();
+}
+
+bool RockControl::Initialize(float screenWidth, float screenHeight, Player* player,
+	UFO* ufo, CrossCom* crosscom, Color TheColor)
 {
 	GameScreenWidth = screenWidth;
 	GameScreenHeight = screenHeight;
 	RockControl::ThePlayer = player;
 	RockControl::TheUFO = ufo;
 	RockControl::Comm = crosscom;
-	RockControl::TheColor = color;
-}
-
-bool RockControl::Initialize()
-{
+	RockControl::TheColor = TheColor;
 
 	return false;
 }
@@ -30,7 +43,7 @@ void RockControl::LoadModel(string modelOne, string modelTwo, string modelThree,
 
 void RockControl::LoadSound(Sound exp)
 {
-	Explode = exp;
+	ExplodeSound = exp;
 }
 
 void RockControl::Update(float deltaTime)
@@ -103,7 +116,7 @@ void RockControl::NewWave(void)
 
 void RockControl::RockHit(Rock* rockHit)
 {
-	rockHit->TheExploder->Spawn(rockHit->Position, 15, rockHit->Radius);
+	rockHit->TheExploder.Spawn(rockHit->Position, 15, rockHit->Radius);
 
 	switch (rockHit->Size)
 	{
@@ -173,8 +186,8 @@ void RockControl::SpawnRocks(Vector3 pos, int count, Rock::RockSize size)
 			Rocks.push_back(new Rock(GameScreenWidth, GameScreenHeight, ThePlayer, TheUFO, TheColor));
 			Rocks[rockN]->SetModel(RockModels[GetRandomValue(0, 3)].GetModel());
 			Rocks[rockN]->SetDotModel(DotModel);
-			Rocks[rockN]->LoadSound(Explode);
-			Rocks[rockN]->Initialise();
+			Rocks[rockN]->LoadSound(ExplodeSound);
+			Rocks[rockN]->Initialize();
 			Rocks[rockN]->Debug = Debug;
 
 			TheUFO->Rocks.push_back(new RockData());

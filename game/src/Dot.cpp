@@ -1,7 +1,7 @@
 #include "Dot.h"
 #include "raymath.h"
 
-bool Dot::Initialise()
+bool Dot::Initialize()
 {
 	TheTimer = new Timer();
 	Scale = 0.5f;

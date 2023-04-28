@@ -11,7 +11,7 @@ public:
 	Vector3 PosStart = { 0 };
 	Vector3 PosEnd = { 0 };
 
-	Line(Color color);
+	Line(Color TheColor);
 	virtual ~Line();
 	virtual void Update(float deltaTime);
 	virtual void Draw();

@@ -1,14 +1,7 @@
 #include "WedgeControl.h"
 
-WedgeControl::WedgeControl(float playScreenW, float playScreenH, Player* player, UFO* ufo, CrossCom* crosscom, Color color)
+WedgeControl::WedgeControl()
 {
-	GameScreenWidth = playScreenW;
-	GameScreenHeight = playScreenH;
-	WedgeControl::ThePlayer = player;
-	WedgeControl::Comm = crosscom;
-	WedgeControl::TheColor = color;
-	SpawnTimer = new Timer();
-	TheWedgeGroup = new WedgeGroup(playScreenW, playScreenH, player, ufo, Comm, color);
 }
 
 WedgeControl::~WedgeControl()
@@ -16,10 +9,17 @@ WedgeControl::~WedgeControl()
 	UnloadSound(SpawnSound);
 }
 
-bool WedgeControl::Initialise()
+bool WedgeControl::Initialize(float playScreenW, float playScreenH, Player* player,
+	UFO* ufo, CrossCom* crosscom, Color TheColor)
 {
-	TheWedgeGroup->Initialize();
-	SpawnTimer->Reset(3);
+	GameScreenWidth = playScreenW;
+	GameScreenHeight = playScreenH;
+	WedgeControl::ThePlayer = player;
+	WedgeControl::Comm = crosscom;
+	WedgeControl::TheColor = TheColor;
+	TheWedgeGroup.Initialize(playScreenW, playScreenH, player, ufo, Comm, TheColor);
+
+	SpawnTimer.Reset(3);
 	Ready = false;
 
 	return false;
@@ -28,12 +28,12 @@ bool WedgeControl::Initialise()
 void WedgeControl::LoadSound(Sound explode, Sound spawn)
 {
 	WedgeControl::SpawnSound = spawn;
-	TheWedgeGroup->LoadSound(explode);
+	TheWedgeGroup.LoadSound(explode);
 }
 
 void WedgeControl::LoadModel(string model)
 {
-	TheWedgeGroup->LoadModel(model);
+	TheWedgeGroup.LoadModel(model);
 }
 
 void WedgeControl::Input()
@@ -43,28 +43,28 @@ void WedgeControl::Input()
 
 void WedgeControl::Update(float deltaTime)
 {
-	TheWedgeGroup->Update(deltaTime);
-	SpawnTimer->Update(deltaTime);
+	TheWedgeGroup.Update(deltaTime);
+	SpawnTimer.Update(deltaTime);
 
 	if (!Comm->SpawnWedgeGroup)
 	{
-		SpawnTimer->Reset();
+		SpawnTimer.Reset();
 		return;
 	}
 
-	if (TheWedgeGroup->Enabled)
+	if (TheWedgeGroup.Enabled)
 	{
-		SpawnTimer->Reset();
+		SpawnTimer.Reset();
 		return;
 	}
 
 	bool resetTimer = false;
 
-	for (auto wedgePair : TheWedgeGroup->WedgePairs)
+	for (auto &wedgePair : TheWedgeGroup.WedgePairs)
 	{
-		for (auto wedge : wedgePair->Wedges)
+		for (auto &wedge : wedgePair.Wedges)
 		{
-			if (wedge->Enabled)
+			if (wedge.Enabled)
 			{
 				resetTimer = true;
 			}
@@ -73,13 +73,13 @@ void WedgeControl::Update(float deltaTime)
 
 	if (resetTimer)
 	{
-		SpawnTimer->Reset();
+		SpawnTimer.Reset();
 		return;
 	}
 
-	if (SpawnTimer->Elapsed())
+	if (SpawnTimer.Elapsed())
 	{
-		SpawnTimer->Reset();
+		SpawnTimer.Reset();
 
 		if (Ready)
 		{
@@ -94,7 +94,7 @@ void WedgeControl::Update(float deltaTime)
 
 void WedgeControl::Draw()
 {
-	TheWedgeGroup->Draw();
+	TheWedgeGroup.Draw();
 }
 
 void WedgeControl::SpawnGroup()
@@ -107,6 +107,5 @@ void WedgeControl::SpawnGroup()
 
 	Ready = false;
 
-	TheWedgeGroup->Spawn({ GameScreenWidth,
-		GetRandomFloat(-GameScreenHeight, GameScreenHeight), 0}, GetRandomVelocity(1.5f));
+	TheWedgeGroup.Spawn(GetRandomVelocity(1.5f));
 }

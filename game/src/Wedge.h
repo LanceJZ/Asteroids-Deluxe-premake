@@ -10,13 +10,13 @@ public:
 	bool Docked = true;
 	bool NewWave = false;
 
-	Wedge(float windowWidth, float windowHeight, Player* player, UFO* ufo, CrossCom* crossCom, Color color);
+	Wedge();
 	virtual ~Wedge();
 
-	bool Initialize();
+	bool Initialize(float windowWidth, float windowHeight, Player* player,
+		UFO* ufo, CrossCom* crossCom, Color TheColor);
 	void LoadSound(Sound explode);
 
-	virtual void Input();
 	virtual void Update(float deltaTime);
 	virtual void Draw();
 
@@ -28,9 +28,9 @@ private:
 	float TurnSpeed = 0.5f;
 	float RotateMagnitude = PI / 2;
 
-	Player* ThePlayer;
-	UFO* TheUFO;
-	CrossCom* Comm;
+	Player* ThePlayer = nullptr;
+	UFO* TheUFO = nullptr;
+	CrossCom* Comm = nullptr;
 
 	bool CheckCollision();
 	void Collision();
@@ -38,5 +38,6 @@ private:
 	void ChaseUFO();
 	void TurnOff();
 	void LeavePlay();
+	void Reset();
 };
 

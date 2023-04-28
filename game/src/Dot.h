@@ -6,7 +6,7 @@
 class Dot : public LineModel
 {
 public:
-	bool Initialise();
+	bool Initialize();
 	virtual void Update(float deltaTime);
 	virtual void Draw();
 

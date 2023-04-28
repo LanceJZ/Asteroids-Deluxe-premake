@@ -1,23 +1,24 @@
 #include "Wedge.h"
 
-Wedge::Wedge(float windowWidth, float windowHeight, Player* player, UFO* ufo, CrossCom* crossCom, Color color)
+Wedge::Wedge()
+{
+}
+
+Wedge::~Wedge()
+{
+}
+
+bool Wedge::Initialize(float windowWidth, float windowHeight, Player* player,
+	UFO* ufo, CrossCom* crossCom, Color TheColor)
 {
 	WindowHeight = windowHeight;
 	WindowWidth = windowWidth;
 	Wedge::ThePlayer = player;
 	Wedge::TheUFO = ufo;
 	Wedge::Comm = crossCom;
-	Wedge::ModelColor = color;
+	Wedge::ModelColor = TheColor;
 	Radius = 0.72f;
-}
 
-Wedge::~Wedge()
-{
-	UnloadSound(Sound01);
-}
-
-bool Wedge::Initialize()
-{
 	TurnOff();
 
 	return false;
@@ -28,12 +29,6 @@ void Wedge::LoadSound(Sound explode)
 	Sound01 = explode;
 	SetSoundVolume(Sound01, 0.75f);
 }
-
-void Wedge::Input()
-{
-
-}
-
 void Wedge::Update(float deltaTime)
 {
 	LineModel::Update(deltaTime);
@@ -62,7 +57,7 @@ void Wedge::Update(float deltaTime)
 			LeavePlay();
 		}
 
-		if (CheckCollision())
+		if (CheckCollision() && Enabled)
 		{
 			Collision();
 		}
@@ -76,8 +71,11 @@ void Wedge::Draw()
 
 void Wedge::Spawn()
 {
+	TurnOff();
 	Enabled = true;
 	Docked = true;
+	Velocity = { 0 };
+	RotationVelocity = 0;
 }
 
 bool Wedge::CheckCollision()
@@ -91,12 +89,12 @@ bool Wedge::CheckCollision()
 		}
 	}
 
-	for (auto shot : ThePlayer->Shots)
+	for (auto &shot : ThePlayer->Shots)
 	{
-		if (CirclesIntersect(shot))
+		if (CirclesIntersect(&shot))
 		{
 			ThePlayer->ScoreUpdate(TheScore);
-			shot->Enabled = false;
+			shot.Enabled = false;
 			return true;
 		}
 	}
@@ -107,9 +105,9 @@ bool Wedge::CheckCollision()
 		return true;
 	}
 
-	if (CirclesIntersect(TheUFO->TheShot))
+	if (CirclesIntersect(&TheUFO->TheShot))
 	{
-		TheUFO->TheShot->Enabled = false;
+		TheUFO->TheShot.Enabled = false;
 		return true;
 	}
 
@@ -137,9 +135,7 @@ void Wedge::ChaseUFO()
 void Wedge::TurnOff()
 {
 	Enabled = false;
-	Velocity = { 0 };
-	RotationVelocity = 0;
-	Position = { 30, 30, 0 };
+	Position = { WindowWidth * 2, WindowHeight * 2, 0 };
 }
 
 void Wedge::LeavePlay()
@@ -148,6 +144,10 @@ void Wedge::LeavePlay()
 
 	if (OffScreen())
 	{
-		Initialize();
+		TurnOff();
 	}
+}
+
+void Wedge::Reset()
+{
 }

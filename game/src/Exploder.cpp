@@ -1,9 +1,17 @@
 #include "Exploder.h"
 
-Exploder::Exploder(vector<Vector3> dotModel, Color color)
+Exploder::Exploder()
 {
-	Exploder::DotModel.SetModel(dotModel);
-	Exploder::TheColor = color;
+}
+
+Exploder::~Exploder()
+{
+	for (int i = 0; i < Dots.size(); i++)
+	{
+		delete Dots[i];
+	}
+
+	Dots.clear();
 }
 
 void Exploder::Update(float deltaTime)
@@ -22,8 +30,11 @@ void Exploder::Draw()
 	}
 }
 
-bool Exploder::Initialise()
+bool Exploder::Initialize(vector<Vector3> dotModel, Color TheColor)
 {
+	Exploder::DotModel.SetModel(dotModel);
+	Exploder::TheColor = TheColor;
+
 	return false;
 }
 
@@ -47,7 +58,7 @@ void Exploder::Spawn(Vector3 position, int count, float radius)
 		if (spawnDot)
 		{
 			Dots.push_back(new Dot());
-			Dots[dot]->Initialise();
+			Dots[dot]->Initialize();
 			Dots[dot]->SetModel(DotModel.GetModel());
 			Dots[dot]->ModelColor = TheColor;
 		}
